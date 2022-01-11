@@ -5,14 +5,19 @@ import com.example.prodj.repo.PostRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.Optional;
 
 @Controller
 public class BlogController {
-    @Autowired
-    private PostRepo postRepo;
+    private final PostRepo postRepo;
+
+    public BlogController(PostRepo postRepo) {
+        this.postRepo = postRepo;
+    }
 
     @GetMapping("/blog")
     public String blogMain(Model module){
@@ -32,4 +37,42 @@ public class BlogController {
         return "redirect:/blog";
     }
 
+    @GetMapping("/blog/{id}")
+    public String blogDetails(@PathVariable(value = "id") long id, Model model) {
+        if (mod(id, model)) return "redirect:/blog";
+        return "blog-details";
+    }
+
+    private boolean mod(@PathVariable("id") long id, Model model) {
+        if (!postRepo.existsById(id)) {
+            return true;
+        }
+        Optional<Post> post = postRepo.findById(id);
+        ArrayList<Post> res = new ArrayList<>();
+        post.ifPresent(res::add);
+        model.addAttribute("post", res);
+        return false;
+    }
+
+    @GetMapping("/blog/{id}/edit")
+    public String blogEdit(@PathVariable(value = "id") long id, Model model) {
+        if (mod(id, model)) return "redirect:/blog";
+        return "blog-edit";
+    }
+
+    @PostMapping("/blog/{id}/edit")
+    public String blogPostEdit(@PathVariable(value = "id") long id, @RequestParam String title, @RequestParam String anons, @RequestParam String text, Model model){
+        Post post = postRepo.findById(id).orElseThrow();
+        post.setTitle(title);
+        post.setAnons(anons);
+        post.setText(text);
+        postRepo.save(post);
+        return "redirect:/blog";
+    }
+    @PostMapping("/blog/{id}/remove")
+    public String blogPostRemove(@PathVariable(value = "id") long id, Model model){
+        Post post = postRepo.findById(id).orElseThrow();
+        postRepo.delete(post);
+        return "redirect:/blog";
+    }
 }
