@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    <title>Калькулятор</title>
+</head>
+<body>
+<header th:insert="blocks/header :: header"></header>
+<div class="container mt-5 mb-5">
+    <!-- поле ввода первого числа -->
+    <input id="num1" class="form-control" />
+
+    <!-- блок с кнопками -->
+    <div id="operator_btns">
+        <button id="plus" onclick="op='+'" class="btn btn-success">+</button>
+        <button id="minus" onclick="op='-'" class="btn btn-success">-</button>
+        <button id="times" onclick="op='*'" class="btn btn-success">x</button>
+        <button id="divide" onclick="op='/'" class="btn btn-success">:</button>
+    </div>
+
+    <!-- поле ввода второго числа -->
+    <input id="num2" class="form-control" />
+    <br>
+
+    <!-- кнопка для расчётов -->
+    <button onclick="func()" class="btn btn-warning">Посчитать</button>
+
+    <!-- здесь будет результат -->
+    <p id="result"></p>
+
+    <!-- наш скрипт -->
+    <script>
+        // переменная, в которой хранится выбранное математическое действие
+        let op;
+
+        // функция расчёта
+        function func() {
+            // переменная для результата
+            let result;
+            // получаем первое и второе число
+            let num1 = Number(document.getElementById("num1").value);
+            let num2 = Number(document.getElementById("num2").value);
+            // смотрим, что было в переменной с действием, и действуем исходя из этого
+            switch (op) {
+                case '+':
+                    result = num1 + num2;
+                    break;
+                case '-':
+                    result = num1 - num2;
+                    break;
+                case '*':
+                    result = num1 * num2;
+                    break;
+                case '/':
+                    result = num1 / num2;
+                    break;
+            }
+
+            // отправляем результат на страницу
+            document.getElementById("result").innerHTML = result;
+        }
+    </script>
+</div>
+<div th:insert="blocks/footerr :: footerr"></div>
+</body>
+</html>
